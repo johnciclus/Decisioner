@@ -409,8 +409,7 @@ class Yaml2Owl {
 
         yaml.keySet().each{ key ->
 
-            if (key == 'ontology')
-                return
+            if (key == 'ontology') return
 
             if (key == 'prefix') {
                 yaml[key].keySet().each{
@@ -466,9 +465,7 @@ class Yaml2Owl {
                 remap.putAll(yaml[key])
                 return
             }
-            if (key == 'addFrom') {
-                return
-            }
+            if (key == 'addFrom') return
 
             if (yaml[key].subPropertyOf) {
 
@@ -535,9 +532,8 @@ class Yaml2Owl {
                 if (yaml[key].is_a) {
                     def sup = getEntity(yaml[key].is_a, EntityType.CLASS)
                     manager.addAxiom(onto, factory.getOWLSubClassOfAxiom(getEntity(key, EntityType.CLASS), sup))
-                } else{
+                } else
                     manager.addAxiom(onto, factory.getOWLDeclarationAxiom(getEntity(key, EntityType.CLASS)));
-                }
                 yaml[key].keySet().each{
                     if (it == 'is_a') return
                     def prop = getEntity(it)

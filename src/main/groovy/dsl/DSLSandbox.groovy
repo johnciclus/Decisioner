@@ -34,7 +34,7 @@ class DSLSandbox extends GroovyValueFilter{
 
         if (o==null || ALLOWED_TYPES.contains(o.getClass()))
             return o;
-        if (o instanceof Script || o instanceof Closure)
+        if (o in Script || o in Closure)
             return o; // access to properties of compiled groovy script
         throw new SecurityException("Oops, unexpected type: "+o.getClass());
     }

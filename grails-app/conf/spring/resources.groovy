@@ -17,6 +17,7 @@
  */
 
 import com.github.slugify.Slugify
+import dsl.ADMDSL
 import org.pegdown.PegDownProcessor
 import semantics.Know
 import dsl.DSL
@@ -26,12 +27,15 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver
 beans = {
     localeResolver(SessionLocaleResolver) {
         defaultLocale = new Locale("pt")
-        java.util.Locale.setDefault(defaultLocale)
+        Locale.setDefault(defaultLocale)
     }
     slugify(Slugify)
+    //TODO PegDown not thread safe: Take it out of this global variable!
     md(PegDownProcessor)
-    //k(Know, 'http://192.168.154.17:9999/blazegraph/namespace/kb/sparql')
-    k(Know, 'http://172.26.245.126:9999/blazegraph/namespace/kb/sparql')
+
+    k(Know, 'http://127.0.0.1:9999/blazegraph/namespace/kb/sparql')
+
     gui(GUIDSL, 'dsl/gui.groovy', grailsApplication.mainContext)
     dsl(DSL, 'dsl/main.groovy', grailsApplication.mainContext)
+    //admScript(ADMDSL, 'dsl/adm.groovy', grailsApplication.mainContext)
 }

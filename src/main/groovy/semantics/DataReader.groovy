@@ -39,15 +39,14 @@ class DataReader {
         def res
 
         if(!uri){
-            res = k[id].findURI(name)
-            if( res.size()>0 )
+            res = k.findURI(name)
+            if(res.size()>0)
                 uri = res[0].uri
-            else{
+            else
                 throw new RuntimeException("Unknown value: $name")
-            }
         }
 
-        def classList = k[uri].getSuperClass()
+        def classList = k[uri].superClass
 
         /*
         println name
@@ -55,7 +54,7 @@ class DataReader {
         println classList
         */
 
-        if(classList.contains(k.toURI(':TechnologicalEfficiencyFeature'))){
+        if(k.toURI(':TechnologicalEfficiencyFeature') in classList){
             try{
                 res = k[uri].getChildrenIndividuals(id, '?ind ?label ?valueTypeLabel ?value ?weightTypeLabel ?weight ?justification')
                 //res = k[uri].getIndividualsFeatureValueWeight(id, '?ind ?label ?valueTypeLabel ?value ?weightType ?weightTypeLabel ?weight')
@@ -64,7 +63,7 @@ class DataReader {
                 res = []
             }
         }
-        else if(classList.contains(k.toURI('ui:Feature'))){
+        else if(k.toURI('ui:Feature') in classList){
             try{
                 res = k[uri].getGrandChildrenIndividuals(id, '?ind ?label ?valueTypeLabel ?value ?relevance ?justification')
                 k[uri].getChildrenExtraIndividuals(id, '?ind ?name ?justification ?valueTypeLabel ?value ?relevance').each{

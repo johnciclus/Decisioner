@@ -57,18 +57,17 @@
                             label = ontology[id]['label'][lg].replace('@'+lang, '');
                         }
                     }
-                    return label
+                    return label;
                 }
                 else{
-                    return id
+                    return id;
                 }
             }
 
             function setRootNodes(id, property){
                 if(ontology[id] && ontology[id][property]){
                     setRootNodes(ontology[id][property], property);
-                }
-                else{
+                } else {
                     var exist = false;
                     for(var elId in classes){
                         if(classes[elId].id == id){
@@ -134,7 +133,7 @@
                 });
 
                 classes = [];
-            };
+            }
 
             function loadTrees(){
                 console.log('Load trees');

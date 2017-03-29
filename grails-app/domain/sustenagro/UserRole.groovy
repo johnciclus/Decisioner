@@ -39,10 +39,7 @@ class UserRole implements Serializable {
 
     @Override
     boolean equals(other) {
-        if (!(other instanceof UserRole)) {
-            return false
-        }
-
+        if (!(other in UserRole)) return false
         other.user?.id == user?.id && other.role?.id == role?.id
     }
 
@@ -63,7 +60,7 @@ class UserRole implements Serializable {
     }
 
     private static DetachedCriteria criteriaFor(long userId, long roleId) {
-        UserRole.where {
+        where {
             user == User.load(userId) && role == Role.load(roleId)
         }
     }
@@ -77,9 +74,9 @@ class UserRole implements Serializable {
     static boolean remove(User u, Role r, boolean flush = false) {
         if (u == null || r == null) return false
 
-        int rowCount = UserRole.where { user == u && role == r }.deleteAll()
+        int rowCount = where {user == u && role == r}.deleteAll()
 
-        if (flush) { UserRole.withSession { it.flush() } }
+        if (flush) {withSession {it.flush()}}
 
         rowCount
     }
@@ -87,29 +84,27 @@ class UserRole implements Serializable {
     static void removeAll(User u, boolean flush = false) {
         if (u == null) return
 
-        UserRole.where { user == u }.deleteAll()
+        where {user == u}.deleteAll()
 
-        if (flush) { UserRole.withSession { it.flush() } }
+        if (flush) {withSession{it.flush()}}
     }
 
     static void removeAll(Role r, boolean flush = false) {
         if (r == null) return
 
-        UserRole.where { role == r }.deleteAll()
+        where {role == r}.deleteAll()
 
-        if (flush) { UserRole.withSession { it.flush() } }
+        if (flush) {withSession {it.flush()}}
     }
 
     static constraints = {
         role validator: { Role r, UserRole ur ->
             if (ur.user == null || ur.user.id == null) return
             boolean existing = false
-            UserRole.withNewSession {
-                existing = UserRole.exists(ur.user.id, r.id)
+            withNewSession {
+                existing = exists(ur.user.id, r.id)
             }
-            if (existing) {
-                return 'userRole.exists'
-            }
+            if (existing) return 'userRole.exists'
         }
     }
 

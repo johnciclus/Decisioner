@@ -7,21 +7,27 @@
                 <g:if test="${tag == 'valuetype'}">
                     <select id="${tag}" name="${tag}" class="form-control">
                         <g:each var="el" in="${valuetypes}">
-                            <option value="${el.valuetype}" <g:if test="${ indicator.valuetype == el.valuetype}"> selected </g:if>> ${el.valuetype}</option>
+                            <option value="${el.valuetype}" <g:if test="${ indicator.valuetype == el.valuetype}"> selected </g:if>>
+                                ${el.valuetype}
+                            </option>
                         </g:each>
                     </select>
                 </g:if>
                 <g:elseif test="${tag == 'dimension'}">
                     <select id="${tag}" name="${tag}" class="form-control select-${tag}">
                         <g:each var="el" in="${dimensions}">
-                            <option value="${el.id}" <g:if test="${ indicator.dimension == el.id}"> selected </g:if>> ${el.id}</option>
+                            <option value="${el.id}" <g:if test="${ indicator.dimension == el.id}"> selected </g:if>>
+                                ${el.id}
+                            </option>
                         </g:each>
                     </select>
                 </g:elseif>
                 <g:elseif test="${tag == 'attribute'}">
                     <select id="${tag}" name="${tag}" class="form-control select-${tag}">
                         <g:each var="el" in="${attributes[indicator.dimension]}">
-                            <option value="${el.attribute}" <g:if test="${ indicator.attribute == el.attribute}"> selected </g:if>> ${el.attribute}</option>
+                            <option value="${el.attribute}" <g:if test="${ indicator.attribute == el.attribute}"> selected </g:if>>
+                                ${el.attribute}
+                            </option>
                         </g:each>
                     </select>
                 </g:elseif>

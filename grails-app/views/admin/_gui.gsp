@@ -57,7 +57,7 @@
                 //        {'name': 'title', 'value': 'title', 'score': 400, 'meta': 'commands'},
                 //        {'name': 'description', 'value': 'Description', 'score': 400, 'meta': 'commands'}]);
             }
-        }
+        };
 
         langTools.addCompleter(guiCompleter);
 

@@ -72,7 +72,7 @@
 
             $('#langItems .itemlink').click(function(){
                 var langName = $(this).attr('href').substring(1);
-                console.log(langName)
+                console.log(langName);
                 $.post( '/admin/getLang',
                         {'id': langName},
                         function (data) {

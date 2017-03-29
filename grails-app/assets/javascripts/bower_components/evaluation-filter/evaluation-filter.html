@@ -1,0 +1,182 @@
+<!--
+  ~ Copyright (c) 2015-2017 Dilvan Moreira.
+  ~ Copyright (c) 2015-2017 John Garavito.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~  you may not use this file except in compliance with the License.
+  ~  You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-form/iron-form.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-radio-button/paper-radio-button.html">
+<link rel="import" href="../paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../paper-styles/color.html">
+
+<!--script src="js/matrix.js"></script-->
+<div class="col-sm-4 text-right">
+    <g:render template="/widgets/label" model="[id: id, label: label, widgetClass: 'control-label']"/>
+</div>
+
+<div class="col-sm-8">
+    <g:render template="/widgets/category" model="[id: id, data: data, header: header, selectType: selectType, required: required]"/>
+</div>
+
+<dom-module id="evaluation-filter">
+    <template>
+        <style is="custom-style">
+            #container {
+                display: flex;
+            }
+            paper-button {
+                font-family: 'Roboto', 'Noto', sans-serif;
+                font-weight: normal;
+                font-size: 14px;
+                -webkit-font-smoothing: antialiased;
+            }
+            paper-button.pink {
+                color: var(--paper-pink-a200);
+                --paper-button-ink-color: var(--paper-pink-a200);
+            }
+            paper-button.pink:hover {
+                background-color: var(--paper-pink-100);
+            }
+            paper-button.indigo {
+                background-color: var(--paper-indigo-500);
+                color: white;
+                --paper-button-raised-keyboard-focus: {
+                    background-color: var(--paper-pink-a200) !important;
+                    color: white !important;
+                };
+            }
+            paper-button.indigo:hover {
+                background-color: var(--paper-indigo-400);
+            }
+            paper-button.green {
+                background-color: var(--paper-green-500);
+                color: white;
+            }
+            paper-button.green[active] {
+                background-color: var(--paper-red-500);
+            }
+            paper-button.disabled {
+                color: white;
+            }
+
+
+            paper-checkbox {
+                font-family: 'Roboto', sans-serif;
+                margin: 24px;
+            }
+
+            paper-checkbox:first-child {
+                --primary-color: #ff5722;
+            }
+
+            paper-checkbox.styled {
+                align-self: center;
+                border: 1px solid var(--paper-green-200);
+                padding: 8px 16px;
+                --paper-checkbox-checked-color: var(--paper-green-500);
+                --paper-checkbox-checked-ink-color: var(--paper-green-500);
+                --paper-checkbox-unchecked-color: var(--paper-green-900);
+                --paper-checkbox-unchecked-ink-color: var(--paper-green-900);
+                --paper-checkbox-label-color: var(--paper-green-500);
+                --paper-checkbox-label-spacing: 0;
+                --paper-checkbox-margin: 8px 16px 8px 0;
+                --paper-checkbox-vertical-align: top;
+            }
+
+            paper-checkbox .subtitle {
+                display: block;
+                font-size: 0.8em;
+                margin-top: 2px;
+                max-width: 150px;
+            }
+        </style>
+        <div>
+            <form is="iron-form" id="form333" method="get" action="/admin/testt">
+                <paper-input name="name" label="name"></paper-input>
+                <paper-button raised class="indigo" onclick="subForm()">Submit</paper-button>
+            </form>
+
+
+            <p>Test ..</p>
+            <form  id="form12" method="get" action="/admin/testt">
+                <paper-checkbox checked>Checked</paper-checkbox>
+                <paper-checkbox class="styled">
+                    Checkbox
+                    <span class="subtitle">
+                   With a longer label
+                   </span>
+                </paper-checkbox>
+                <paper-checkbox disabled>Disabled</paper-checkbox>
+
+                <paper-radio-group selected="small">
+                    <paper-radio-button name="small">Small
+                        <span class="subtitle">
+                   With a longer label
+                   </span></paper-radio-button>
+                    <paper-radio-button name="medium">Medium</paper-radio-button>
+                    <paper-radio-button name="large">Large</paper-radio-button>
+                </paper-radio-group>
+
+                <paper-radio-button></paper-radio-button>
+                <paper-radio-button>Item label</paper-radio-button>
+
+                <paper-input name="fname" label="First name"></paper-input>
+                <paper-input name="lname" label="First name"></paper-input>
+
+                <paper-button raised class="indigo" onclick="submitForm()">Submit</paper-button>
+            </form>
+        </div>
+
+    </template> 
+    <script>
+        'use strict';
+        function subForm() {
+            document.getElementById('form333').submit();
+        }
+        function submitForm() {
+            document.getElementById('form12').submit();
+        }
+        let msgs = {
+            sustainability_index: {pt: "Índice de Sustentabilidade", en: "Sustainability Index"},
+            efficiency_index: {pt: "Índice de Eficiência", en: "Efficiency Index"},
+            matrix_quadrant: {pt: "Quadrante", en: "Quadrant"},
+            matrix_recommendation: {pt: "Recomendação", en: "Recommendation"}};
+
+        Polymer({
+            is: "evaluation-filter",
+            properties: {
+                title: {type: String, value: ""},
+                x: {type: Number, value: 0},
+                locale: {type: String, value: "en"}
+            },
+            lang: function(id){if (this[id]) return this[id]; return msgs[id][this.locale];},
+            attached: function(){
+//                var result = Matrix("#matrix", {x: this.x, y: this.y, label_x: this.label_x, label_y: this.label_y, range_x: this.range_x, range_y: this.range_y, quadrants: this.quadrants, recomendations: this.recomendations});
+//                document.getElementById("matrixResult").innerHTML =
+//                    "<p>"+ this.lang("sustainability_index") + ": <b>"+formatFloat(this.x)+"</b></p>" +
+//                    "<p>"+ this.lang("efficiency_index") +": <b>"+formatFloat(this.y)+"</b></p>" +
+//                    "<p>"+ this.lang("matrix_quadrant") +": <b>"+result.quadrant+"</b></p>" +
+//                    "<p>"+ this.lang("matrix_recommendation") +": <b>"+result.recomendation+"</b></p>";
+            }
+        });
+    </script>
+</dom-module>
+
+
+

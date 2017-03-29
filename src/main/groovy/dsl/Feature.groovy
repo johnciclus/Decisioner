@@ -19,10 +19,13 @@
 package dsl
 
 import org.springframework.context.ApplicationContext
+import semantics.Know
 import utils.Uri
 
 /**
  * Feature
+ * Caracteristic of the EvaluationObjects
+ * in SustenAgro an indicator (with/without weight)
  *
  * @author Dilvan Moreira.
  * @author John Garavito.
@@ -31,7 +34,7 @@ class Feature {
     private def _uri
     private def _name
     private def _ctx
-    private def _k
+    private Know _k
     private def _model = [:]
     private def _conditional = []
     private def _attrs
@@ -44,7 +47,7 @@ class Feature {
         _name = _uri.substring(_uri.lastIndexOf('#')+1)
         _attrs = attrs
 
-        _model = [label: _k[_uri].label, subClass: [:], superClass: _k[_uri].getSuperClass()]
+        _model = [label: _k[_uri].label, subClass: [:], superClass: _k[_uri].superClass]
         grandChildren = _k[_uri].getGrandchildren('?id ?label ?subClass ?relevance ?category ?weight ?weightLabel')
 
         _k[_uri].getSubClass('?label').each{ subClass ->
@@ -52,11 +55,11 @@ class Feature {
             grandChildren.each{
                 if(it.subClass == subClass.subClass) {
                     _model['subClass'][subClass.subClass]['subClass'][it.id] = it
-                    _model['subClass'][subClass.subClass]['subClass'][it.id]['valueTypes'] = _k[it.id].getCollectionIndividualsTypes()
-                    _model['subClass'][subClass.subClass]['subClass'][it.id]['categoryIndividuals'] = _k[it.id].getCollectionIndividuals().capitalizeLabels()
+                    _model['subClass'][subClass.subClass]['subClass'][it.id]['valueTypes'] = _k[it.id].collectionIndividualsTypes
+                    _model['subClass'][subClass.subClass]['subClass'][it.id]['categoryIndividuals'] = _k[it.id].collectionIndividuals.capitalizeLabels()
 
                     if(it.weight){
-                        _model['subClass'][subClass.subClass]['subClass'][it.id]['weightIndividuals'] = _k[it.id].getWeightIndividuals().capitalizeLabels()
+                        _model['subClass'][subClass.subClass]['subClass'][it.id]['weightIndividuals'] = _k[it.id].weightIndividuals.capitalizeLabels()
                     }
                 }
             }
@@ -66,7 +69,7 @@ class Feature {
     def reload(){
         def grandChildren
         _model = [:]
-        _model = [label: _k[_uri].label, subClass: [:], superClass: _k[_uri].getSuperClass()]
+        _model = [label: _k[_uri].label, subClass: [:], superClass: _k[_uri].superClass]
         grandChildren = _k[_uri].getGrandchildren('?id ?label ?subClass ?relevance ?category ?weight ?weightLabel')
 
         _k[_uri].getSubClass('?label').each{ subClass ->
@@ -74,11 +77,11 @@ class Feature {
             grandChildren.each{
                 if(it.subClass == subClass.subClass) {
                     _model['subClass'][subClass.subClass]['subClass'][it.id] = it
-                    _model['subClass'][subClass.subClass]['subClass'][it.id]['valueTypes'] = _k[it.id].getCollectionIndividualsTypes()
-                    _model['subClass'][subClass.subClass]['subClass'][it.id]['categoryIndividuals'] = _k[it.id].getCollectionIndividuals().capitalizeLabels()
+                    _model['subClass'][subClass.subClass]['subClass'][it.id]['valueTypes'] = _k[it.id].collectionIndividualsTypes
+                    _model['subClass'][subClass.subClass]['subClass'][it.id]['categoryIndividuals'] = _k[it.id].collectionIndividuals.capitalizeLabels()
 
                     if(it.weight){
-                        _model['subClass'][subClass.subClass]['subClass'][it.id]['weightIndividuals'] = _k[it.id].getWeightIndividuals().capitalizeLabels()
+                        _model['subClass'][subClass.subClass]['subClass'][it.id]['weightIndividuals'] = _k[it.id].weightIndividuals.capitalizeLabels()
                     }
                 }
             }
@@ -106,18 +109,16 @@ class Feature {
             model['subClass'] = [:]
 
             _conditional.each{
-                evalObjTypes = _k[uri].getType()
+                evalObjTypes = _k[uri].type
                 if(evalObjTypes.contains(it.objectType)){
-                    if(evalObjTypes.contains(it.isType)){
+                    if(it.isType in evalObjTypes){
                         def includes = it.then.include
-                        if(includes.getClass() == ArrayList){
+                        if(includes in ArrayList){
                             includes.each{ include ->
                                 model['subClass'][include] = _model['subClass'][include]
                             }
-                        }
-                        else{
+                        } else
                             model['subClass'][includes] = _model['subClass'][includes]
-                        }
                     }
                 }
             }
@@ -149,9 +150,7 @@ class Feature {
         [include: includes]
     }
 
-    def exclude(String arg){
-
-    }
+    def exclude(String arg){}
 
     def evalObject(String arg){
         /*

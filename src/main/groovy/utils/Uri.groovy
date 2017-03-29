@@ -28,7 +28,7 @@ class Uri {
     def static simpleDomain(ArrayList list, String dom, String prefix=":"){
         list.each{ el ->
             el.each{
-                if(it.value instanceof String)
+                if(it.value in String)
                     it.value = it.value.replace(dom,prefix)
             }
         }
@@ -45,27 +45,25 @@ class Uri {
     }
 
     def static printTree(Object object, int level=-1){
-        if(object.getClass() == LinkedHashMap){
+        if(object in LinkedHashMap){
             level++
             object.each{
                 print "\t"*level + it.key + " : "
-                if((it.value.getClass() != LinkedHashMap) && (it.value.getClass() != ArrayList)) {
+                if((!it.value in LinkedHashMap) && (!it.value in ArrayList))
                     println it.value
-                }
                 else{
                     println ""
                     printTree(it.value, level)
                 }
             }
         }
-        else if(object.getClass() == ArrayList){
+        else if(object in ArrayList){
             level++
             object.eachWithIndex{ it, index ->
                 print "\t"*level + '['+index+"] : "
-                if((it.getClass() != LinkedHashMap) && (it.getClass() != ArrayList)) {
+                if((!it in LinkedHashMap) && (!it in ArrayList))
                     println it
-                }
-                else{
+                else {
                     println ""
                     printTree(it, level)
                 }

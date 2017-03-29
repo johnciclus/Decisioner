@@ -23,6 +23,7 @@ import org.grails.io.support.PathMatchingResourcePatternResolver
 import org.kohsuke.groovy.sandbox.SandboxTransformer
 import org.springframework.context.ApplicationContext
 import semantics.DataReader
+import semantics.Know
 import utils.Uri
 
 /**
@@ -36,7 +37,7 @@ class GUIDSL {
     private _sandbox
     private _script
     private _ctx
-    private _k
+    private Know _k
     private _widgetAttrs
     private contanst
     private _controller
@@ -75,17 +76,17 @@ class GUIDSL {
         // the DelegatingScript class as the base script class.
         def _cc = new CompilerConfiguration()
         _cc.addCompilationCustomizers(new SandboxTransformer())
-        _cc.setScriptBaseClass(DelegatingScript.class.getName())
+        _cc.setScriptBaseClass(DelegatingScript.class.name)
 
         _shell = new GroovyShell(new Binding(), _cc)
         _sandbox = new DSLSandbox()
         _sandbox.register()
 
         // Configure the GroovyShell and pass the compiler configuration.
-        //_shell = new GroovyShell(this.class.classLoader, binding, cc)
+        //dslInter = new GroovyShell(this.class.classLoader, binding, cc)
         _ctx = applicationContext
 
-        //_script = (DelegatingScript) _shell.parse(new File(filename).text)
+        //_script = (DelegatingScript) dslInter.parse(new File(filename).text)
         //println new File(_ctx.getBean('path')+filename).toString()
 
         _script = (DelegatingScript) _shell.parse(_ctx.getResource(filename).file)
@@ -125,7 +126,7 @@ class GUIDSL {
         //}
 
         _script = (DelegatingScript) _shell.parse(code)
-        _script.setDelegate(this)
+        _script.delegate = this
 
         def response  = [:]
 
@@ -136,11 +137,11 @@ class GUIDSL {
         }
         catch(Exception e){
             response.error = [:]
-            for (StackTraceElement el : e.getStackTrace()) {
-                if(el.getMethodName() == 'run' && el.getFileName() ==~ /Script.+\.groovy/) {
-                    response.error.line = el.getLineNumber()
-                    response.error.message = e.getMessage()
-                    response.error.filename = el.getFileName()
+            for (StackTraceElement el : e.stackTrace) {
+                if(el.methodName == 'run' && el.fileName ==~ /Script.+\.groovy/) {
+                    response.error.line = el.lineNumber
+                    response.error.message = e.message
+                    response.error.filename = el.fileName
                 }
             }
             response.status = 'error'
@@ -197,7 +198,7 @@ class GUIDSL {
 
     def listEvaluationObjects(Map attrs = [:], ArrayList view = viewsMap[_controller][_action]){
         def defaultAttrs =  [:]
-        def evaluationObjects = _k['inds:'+attrs.userId].getEvaluationObjectsIdLabel() //_k['ui:EvaluationObject'].getIndividualsIdLabel()
+        def evaluationObjects = _k['inds:'+attrs.userId].evaluationObjectsIdLabel //_k['ui:EvaluationObject'].getIndividualsIdLabel()
 
         defaultAttrs.each{key, value->
             if(!attrs.containsKey(key))
@@ -207,10 +208,10 @@ class GUIDSL {
             def uri = _k.toURI('inds:'+attrs.id)
             attrs.id = uri
             attrs.data = []
-            _k[uri].getDataProperties().each{
+            _k[uri].dataProperties.each{
                 attrs.data.push([label: it.dataPropertyLabel, value: it.value])
             }
-            _k[uri].getObjectProperties().each{
+            _k[uri].objectProperties.each{
                 attrs.data.push([label: it.objectPropertyLabel, value: it.valueLabel])
             }
         }
@@ -268,7 +269,6 @@ class GUIDSL {
 
     def recommendation(String txt, ArrayList view = viewsMap[_controller][_action]){
         view.push(['widget': 'text', 'attrs': [text: _toHTML('Recomendação: '+ txt)]])
-
     }
 
     def recommendation(boolean c, String txt){
@@ -387,20 +387,16 @@ class GUIDSL {
 
         widgets.each {
             if (it.widget){
-                if (it.attrs && it.widgets) {
+                if (it.attrs && it.widgets)
                     "$it.widget"(it.attrs, it.widgets, attrs.widgets)
-                }
-                else if(it.widgets) {
+                else if(it.widgets)
                     "$it.widget"([:], it.widgets, attrs.widgets)
-                }
-                else if(it.attrs) {
+                else if(it.attrs)
                     //println 'Only Attrs '+ it.widget
                     "$it.widget"(it.attrs, attrs.widgets) // "$it.widget"(it.attrs, [], attrs.widgets)
-                }
-                else{
+                else
                     //println 'No Attrs '+it.widget
                     "$it.widget"([:], [], attrs.widgets)
-                }
             }
         }
         view.push(['widget': 'form', 'attrs': attrs])
@@ -418,9 +414,8 @@ class GUIDSL {
         def analyses = [:]
 
         attrs.each { key, value ->
-            if(!attributes.containsKey(key)){
+            if(!attributes.containsKey(key))
                 attributes[key] = value
-            }
         }
 
         if(roles.contains(_k.toURI('ui:AdminRole'))){
@@ -430,13 +425,13 @@ class GUIDSL {
         }
 
         if(attrs.userId){
-            _k['inds:'+attrs.userId].getEvaluationObjectsIdLabel().each{
+            _k['inds:'+attrs.userId].evaluationObjectsIdLabel.each{
                 evaluationObjects[it.id.substring(it.id.lastIndexOf('#')+1)] = [label: it.label]
             }
         }
 
         if(attrs.evalObjId){
-            _k['inds:'+attrs.evalObjId].getAnalysesIdLabel().each{
+            _k['inds:'+attrs.evalObjId].analysesIdLabel.each{
                 analyses[it.id.substring(it.id.lastIndexOf('#')+1)] = [label: it.label]
             }
         }
@@ -457,20 +452,18 @@ class GUIDSL {
 
     def methodMissing(String key, attrs){
         //println "GUIDSL methodMissing: "+ key //+ " - "+attrs
-        if(attrs.getClass() == Object[]){
+        if(attrs in Object[]){
             def container = []
             def element = null
-            if(getWidgetsNames().contains(key)){
-                if(attrs.size()==1 && attrs[0].getClass() == String){
+            if(key in widgetsNames){
+                if(attrs.size()==1 && attrs[0] in String){
                     if(viewsMap[_controller]){
                         container = viewsMap[_controller][_action]
                         element = ['widget': key, 'attrs': ['text': _toHTML(attrs[0])]]
-                    }
-                    else{
+                    } else
                         _props[key] =_toHTML(attrs[0])
-                    }
                 }
-                else if(attrs.size()==1 && attrs[0].getClass() == LinkedHashMap){
+                else if(attrs.size()==1 && attrs[0] in LinkedHashMap){
                     if(viewsMap[_controller] && attrs[0].text){
                         attrs[0].text = _toHTML(attrs[0].text)
                         /*
@@ -485,13 +478,12 @@ class GUIDSL {
                     container = viewsMap[_controller][_action]
                     element = ['widget': key, 'attrs': attrs[0]]
                 }
-                else if(attrs.size()==2 && attrs[0].getClass() == LinkedHashMap && attrs[1].getClass() == ArrayList){
+                else if(attrs.size()==2 && attrs[0] in LinkedHashMap && attrs[1] in ArrayList){
                     if(attrs[0].text){
                         container = attrs[1]
                         attrs[0].text = _toHTML(attrs[0].text)
                         element = ['widget': key, 'attrs': attrs[0]]
-                    }
-                    else{
+                    } else {
                         container = attrs[1]
                         element = ['widget': key, 'attrs': attrs[0]]
                     }
@@ -505,10 +497,9 @@ class GUIDSL {
                 }
                 */
             }
-            else if(attrs.size()==1 && attrs[0].getClass() == String){
+            else if(attrs.size()==1 && attrs[0] in String)
                 _props[key] = _toHTML(attrs[0])
-            }
-            else{
+            else {
                 println 'Unknown method: '+ key
                 attrs.eachWithIndex{ it, int i ->
                     println "Attrs ["+i+"]"
@@ -537,7 +528,7 @@ class GUIDSL {
     def getVariables(){
         def result = [:]
         _props.each{ key, value ->
-            if(value.getClass() != DataReader)
+            if(!value in DataReader)
                 result[key] = value
         }
         return result
@@ -553,15 +544,13 @@ class GUIDSL {
         viewsMap[controllerName][actionName].each{ command ->
             if(command.request){
                 command.request.each{ key, attrs ->
-                    if(key!='widgets'){
+                    if(key != 'widgets')
                         command.attrs[key] = _k[attrs[1]].getLabelDescription(attrs[0].toString())
-                    }
-                    else if(key=='widgets'){
+                    else if(key == 'widgets')
                         attrs.each{ subKey, subArgs ->
                             //command.attrs.widgets[subKey]['attrs']['data'] = getLabelDescription(subArgs[1], subArgs[0])
                             command.attrs.widgets[subKey]['attrs']['data'] = _k[subArgs[1]].getLabelDescription(subArgs[0].toString())
                         }
-                    }
                 }
             }
         }
@@ -578,7 +567,7 @@ class GUIDSL {
 
     def renderView(String name){
         _sandbox.register()
-        //        _script = (DelegatingScript) _shell.parse(new File("dsl/views/${name}.groovy").text)
+        //        _script = (DelegatingScript) dslInter.parse(new File("dsl/views/${name}.groovy").text)
 
         _script = (DelegatingScript) _shell.parse(_ctx.getResource("dsl/views/${name}.groovy").file)
         _script.setDelegate(this)
@@ -624,35 +613,31 @@ class GUIDSL {
 
             if(widgetWithText.contains(name)){
                 it.value().each{ subNode ->
-                    if(subNode.getClass() == String)
+                    if (subNode in String)
                         text += subNode
-                    else if(subNode.getClass() == Node && subNode.name() == 'message'){
+                    else if (subNode in Node && subNode.name() == 'message')
                         text += message(subNode.attribute('key'))
-                    }
                 }
                 attributes['text'] = text
             }
             if(widgetContainer.contains(name)){
                 it.value().each{ subNode ->
-                    if(subNode.getClass() == Node){
+                    if(subNode in Node){
                         subNode.value().each{ widget ->
                             tmp = widget.attributes()
                             tmp.each{ attr ->
-                                if(attr.value.startsWith('message.key=')){
+                                if(attr.value.startsWith('message.key='))
                                     attr.value = message(attr.value.substring(12))
-                                }
                             }
                             widgets.add([widget: subNode.name(), attrs: subNode.attributes() + [widgetName: widget.name(), model: tmp]])
                         }
                     }
                 }
             }
-
-            if(widgetContainer.contains(name))
+            if (widgetContainer.contains(name))
                 this."$name"(attributes, widgets, viewsMap['admin'][file])
             else
                 this."$name"(attributes, viewsMap['admin'][file])
-
         }
         //Uri.printTree(viewsMap['admin'][file])
     }
@@ -667,7 +652,6 @@ class GUIDSL {
             name = it.filename
             widgetsList << name.substring(1, name.lastIndexOf('.'))
         }
-
         return widgetsList
     }
 
@@ -701,5 +685,4 @@ class GUIDSL {
            recommendations << [map['if'],txt]
        }
    */
-
 }

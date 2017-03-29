@@ -13,7 +13,9 @@
             <ul class="dropdown-menu">
                 <g:if test="${users}">
                     <g:each in="${users}">
-                        <li <g:if test="${it.key == userId}"> class="active" </g:if>><a href="/tool/evaluationObject?user=${it.key}">${it.value.label}</a></li>
+                        <li <g:if test="${it.key == userId}"> class="active" </g:if>>
+                            <a href="/tool/evaluationObject?user=${it.key}">${it.value.label}</a>
+                        </li>
                     </g:each>
                 </g:if>
             </ul>
@@ -34,7 +36,9 @@
             <li role="separator" class="divider"></li>
             <g:if test="${evaluationObjects}">
                 <g:each in="${evaluationObjects}">
-                    <li <g:if test="${it.key == evalObjId}"> class="active" </g:if>> <a href="/tool/evaluationObject/${it.key}">${it.value.label}</a></li>
+                    <li <g:if test="${it.key == evalObjId}"> class="active" </g:if>>
+                        <a href="/tool/evaluationObject/${it.key}">${it.value.label}</a>
+                    </li>
                 </g:each>
             </g:if>
         </ul>

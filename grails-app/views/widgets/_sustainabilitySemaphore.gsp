@@ -1,23 +1,35 @@
-<div class="section">
-    <p><strong><g:message code="sustainabilitySemaphore" /></strong></p>
-    <div id="semaphoreResult">
+<%@ page import="grails.converters.JSON" %>
 
-    </div>
-    <div id="semaphore">
+<sustainability-semaphore
+    title="<g:message code="sustainabilitySemaphore"/>"
+    legend="${legend as JSON}"
+    label= "<%=label%>"
+    range= "${range as JSON}"
+    value= <%=value%>
+>
+</sustainability-semaphore>
 
-    </div>
-    <script src="/assets/semaphore.js" type="text/javascript"></script>
-    <script type="text/javascript">
-        function formatFloat(num){
-            return Math.round(num*100)/100;
-        }
+%{--<div class="section">--}%
+    %{--<p><strong><g:message code="sustainabilitySemaphore" /></strong></p>--}%
 
-        var legend = [];
-        <g:each var="l" in="${legend}">
-        legend.push("${l}");
-        </g:each>
+    %{--<div id="semaphoreResult">--}%
 
-        var result = Semaphore("#semaphore", {value: <%=value%>, label: "<%=label%>", legend: legend, range: <%=range%>});
-        $("#semaphoreResult").append("<p><%=label%>: <b>"+formatFloat(result.value)+"</b></p>");
-    </script>
-</div>
+    %{--</div>--}%
+    %{--<div id="semaphore">--}%
+
+    %{--</div>--}%
+    %{--<script src="/assets/semaphore.js" type="text/javascript"></script>--}%
+    %{--<script type="text/javascript">--}%
+        %{--function formatFloat(num){--}%
+            %{--return Math.round(num*100)/100;--}%
+        %{--}--}%
+
+        %{--var legend = [];--}%
+        %{--<g:each var="l" in="${legend}">--}%
+        %{--legend.push("${l}");--}%
+        %{--</g:each>--}%
+
+        %{--var result = Semaphore("#semaphore", {value: <%=value%>, label: "<%=label%>", legend: legend, range: <%=range%>});--}%
+        %{--$("#semaphoreResult").append("<p><%=label%>: <b>"+formatFloat(result.value)+"</b></p>");--}%
+    %{--</script>--}%
+%{--</div>--}%

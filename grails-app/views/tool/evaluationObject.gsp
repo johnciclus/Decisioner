@@ -37,6 +37,12 @@
         </g:else>
 
 
+        <script src="/assets/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+        <link rel="import" href="/assets/bower_components/paper-input/paper-input.html">
+        <link rel="import" href="/assets/bower_components/paper-button/paper-button.html">
+        <link rel="import" href="/assets/bower_components/dsr-title/dsr-title.html">
+
+
         <!--
         <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
         <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js"></script>
@@ -45,6 +51,7 @@
 	<body>
 		<div class="row main">
 			<div id="content" class="col-sm-10 col-sm-offset-1 content">
+                <dsr-title></dsr-title>
                 <g:if test="${inputs}">
 					<g:each in="${inputs}">
 						<div class="section">
@@ -54,7 +61,29 @@
 				</g:if>
 			</div>
 		</div>
+
+
+        <form is="iron-form" id="form" method="get" action="/admin/testt">
+            <paper-input name="name" label="name"></paper-input>
+            <paper-button raised class="indigo" onclick="subForm()">Submit</paper-button>
+        </form>
+
 		<script type="text/javascript">
+            var paperBtn = $("<paper-button></paper-button>");
+            paperBtn.text('Submit');
+            paperBtn.prop("raised", true);
+            paperBtn.attr('class', "indigo");
+            paperBtn.attr('onclick', "subForm()");
+
+            $('#form').append(paperBtn);
+
+            <g:if test="${inputs}">
+                <g:each in="${inputs}">
+                    console.log("${it.widget}")
+                </g:each>
+            </g:if>
+
+
             $(document).ready(function() {
                 function loadAnalyses() {
                     $.post('/tool/analysesView',

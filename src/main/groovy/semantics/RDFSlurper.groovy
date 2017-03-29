@@ -131,7 +131,6 @@ class RDFSlurper {
     }
     */
 
-
     def loadRDF(InputStream is){
         Model m = ModelFactory.createDefaultModel()
 
@@ -195,16 +194,15 @@ class RDFSlurper {
             //println uri+name
             query = this.query("<"+uri+name+"> a ?class")
             //println query
-            if(query.size()>0){
+            if(!query.empty)
                 result = uri+name
-            }
         }
         return result
     }
 
     def getPrefixes(){
         def str = ''
-        _prefixes.each {key, obj -> str += "PREFIX $key: <$obj>\n"}
+        _prefixes.each{key, obj -> str += "PREFIX $key: <$obj>\n"}
         str
     }
 

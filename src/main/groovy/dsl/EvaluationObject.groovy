@@ -19,6 +19,7 @@
 package dsl
 
 import org.springframework.context.ApplicationContext
+import semantics.Know
 
 /**
  * EvaluationObject
@@ -31,7 +32,7 @@ class EvaluationObject {
     def _ctx
     def model
     def widgets
-    def k
+    Know k
     def gui
 
     EvaluationObject(String id, ApplicationContext applicationContext){
@@ -58,8 +59,7 @@ class EvaluationObject {
             prop = id
             request = [prop, dataType]
             attrs['required'] = true
-        }
-        else if(k[uri].type.contains(k.toURI('owl:ObjectProperty'))){
+        } else if(k[uri].type.contains(k.toURI('owl:ObjectProperty'))){
             prop = 'rdf:type'
             request = [prop, dataType]
         }
@@ -77,7 +77,6 @@ class EvaluationObject {
                   dataType: dataType,
                   prop: prop,
                   attrs: attrs]
-
         widgets << [ id: uri,
                      widget: widget,
                      request: request,
@@ -117,22 +116,18 @@ class EvaluationObject {
             widget.each{ key, value ->
                 if(key != 'attrs')
                     widgetTmp[key] = value
-                else{
+                else {
                     widgetTmp['attrs'] = [:]
-
                     value.each{
-                        if(i18nParams.contains(it.key) && it.value.getClass() == LinkedHashMap){
+                        if(i18nParams.contains(it.key) && it.value in LinkedHashMap)
                             widgetTmp['attrs'][it.key] = it.value[locale.language]
-                        }
-                        else {
+                        else
                             widgetTmp['attrs'][it.key] = it.value
-                        }
                     }
                 }
             }
             widgetsTmp.push(widgetTmp)
         }
-
         return widgetsTmp
     }
 }

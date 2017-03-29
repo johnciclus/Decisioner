@@ -1,0 +1,18 @@
+#Ignore Eclipse directories
+.settings
+.project
+.classpath
+
+#Ignore Intellij files
+*.iml
+.idea
+
+js/
+*.js
+.DS_Dtore
+.idea
+target/
+.vscode
+pom.xml
+.lein-repl-history
+figwheel_server.log

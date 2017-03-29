@@ -52,9 +52,8 @@ class UserController {
 
         if( params[usernameURI] && params[passwordURI] && params[passwordURI] == params[passwordConfirmURI] && params[termsofuseURI] == 'yes'){
             params.each{
-                if(it.key == passwordURI){
+                if(it.key == passwordURI)
                     properties[it.key] = [value: springSecurityService.encodePassword(it.value), dataType: k[it.key].range]
-                }
                 else if(it.key.startsWith(base) && it.key != passwordConfirmURI && it.key != termsofuseURI)
                     properties[it.key] = [value: it.value, dataType: k[it.key].range]
             }
@@ -64,7 +63,7 @@ class UserController {
             def uri = k.toURI('inds:'+username)
 
             if(!k[uri].exist()){
-                node.insertUser(username, properties)
+                k.insertUser(username, properties)
 
                 user = new User(username, properties[passwordURI].value, true).save()
                 UserRole.create user, userRole

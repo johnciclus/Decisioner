@@ -1,0 +1,26 @@
+{
+  "name": "Evaluation Object Filter",
+  "description": "Filters evaluated objects based on values for some fields.",
+  "main": "evaluation-filter.html",
+  "moduleType": [],
+  "keywords": [
+    "widget",
+    "filter"
+  ],
+  "authors": [
+    "Dilvan Moreira"
+  ],
+  "license": "GPL",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "homepage": "https://github.com/DilvanLab/evaluation-filter",
+  "dependencies": {
+    "polymer": "^1.4.0"
+  }
+}

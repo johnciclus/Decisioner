@@ -8,7 +8,9 @@
         <div class="row">
             <label class="col-sm-8 control-label">${feature.value.label}</label>
             <div class="col-sm-4 text-right">
-                <button id="<%= feature.value.id + '-justify' %>" type="button" class="btn btn-default justify btn-xs"><span class="glyphicon glyphicon-pencil"><g:message code="justification" /></span></button>
+                <button id="<%= feature.value.id + '-justify' %>" type="button" class="btn btn-default justify btn-xs">
+                    <span class="glyphicon glyphicon-pencil"><g:message code="justification" /></span>
+                </button>
                 <g:render template="/widgets/clearButton" model="[id: feature.value.id, label: g.message(code: 'clean'), widgetClass: 'btn-xs']"/>
             </div>
         </div>
@@ -36,7 +38,9 @@
                         <option selected disabled hidden value=''></option>
 
                         <g:each var="option" in="${feature.value.weightIndividuals}">
-                            <option value="${option.id}" <g:if test="${hasWeight && values[feature.value.id].weight == option.id}"> selected </g:if> >${option.label}</option>
+                            <option value="${option.id}" <g:if test="${hasWeight && values[feature.value.id].weight == option.id}"> selected </g:if>
+                                >${option.label}
+                            </option>
                         </g:each>
                     </select>
                 </div>

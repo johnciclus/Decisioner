@@ -148,8 +148,8 @@ report {
 
     sustainabilityMatrix    x: sustainability,
             y: efficiency,
-            label_x: ['en': 'Sustainability index', 'pt': 'Indice da sustentabilidade'],
-            label_y: ['en': 'Efficiency index', 'pt': 'Indice de eficiência'],
+            label_x: ['en': 'Sustainability Index', 'pt': 'Índice de Sustentabilidade'],
+            label_y: ['en': 'Efficiency index', 'pt': 'Índice de Eficiência'],
             range_x: [-43,43],
             range_y: [-160,800],
             quadrants: [4,3],
@@ -169,12 +169,12 @@ report {
 
 
     sustainabilitySemaphore value: sustainability,
-            label: ['en': 'Index of general sustainability', 'pt': 'Índice da sustentabilidade geral'],
-            legend: [['en': 'Less sustainable', 'pt': 'Menos sustentável'],
+            label: ['en': 'Sustainability Level', 'pt': 'Índice da sustentabilidade geral'],
+            legend: [['en': 'Lower sustainability', 'pt': 'Menos sustentável'],
                      ['en': 'Negative changes', 'pt': 'Alterações negativas'],
-                     ['en': 'No change', 'pt': 'Sem alteração'],
+                     ['en': 'Irrelevant changes', 'pt': 'Sem alteração'],
                      ['en': 'Positive changes', 'pt': 'Alterações positivas'],
-                     ['en': 'More sustainable', 'pt': 'Mais sustentável']],
+                     ['en': 'Higher sustainability', 'pt': 'Mais sustentável']],
             range: [-60,60]
 
 

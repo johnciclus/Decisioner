@@ -23,6 +23,7 @@ import org.kohsuke.groovy.sandbox.SandboxTransformer
 import org.springframework.context.ApplicationContext
 import org.springframework.core.io.Resource
 import semantics.DataReader
+import semantics.Know
 import utils.Uri
 
 /**
@@ -34,7 +35,7 @@ import utils.Uri
 
 class DSL {
     private _ctx
-    private _k
+    private Know _k
     private _gui
     private static _md
 
@@ -62,17 +63,17 @@ class DSL {
 
         def _cc = new CompilerConfiguration()
         _cc.addCompilationCustomizers(new SandboxTransformer())
-        _cc.setScriptBaseClass(DelegatingScript.class.getName())
+        _cc.setScriptBaseClass(DelegatingScript.class.name)
 
         _shell = new GroovyShell(new Binding(), _cc)
         _sandbox = new DSLSandbox()
         _sandbox.register()
 
         // Configure the GroovyShell and pass the compiler configuration.
-        //_shell = new GroovyShell(this.class.classLoader, binding, cc)
+        //dslInter = new GroovyShell(this.class.classLoader, binding, cc)
         //println _ctx.getResource(filename).getFile().text
 
-        //_script = (DelegatingScript) _shell.parse(new File(filename).text)
+        //_script = (DelegatingScript) dslInter.parse(new File(filename).text)
         //println _ctx.getBean('path')
         //println new File(_ctx.getBean('path')+filename).toString()
 
@@ -99,7 +100,7 @@ class DSL {
 
         _script = (DelegatingScript) _shell.parse(code)
         _shell
-        _script.setDelegate(this)
+        _script.delegate = this
 
         def response  = [:]
 
@@ -110,11 +111,11 @@ class DSL {
         }
         catch(Exception e){
             response.error = [:]
-            for (StackTraceElement el : e.getStackTrace()) {
-                if(el.getMethodName() == 'run' && el.getFileName() ==~ /Script.+\.groovy/) {
-                    response.error.line = el.getLineNumber()
-                    response.error.message = e.getMessage()
-                    response.error.filename = el.getFileName()
+            for (StackTraceElement el : e.stackTrace) {
+                if(el.methodName == 'run' && el.fileName ==~ /Script.+\.groovy/) {
+                    response.error.line = el.lineNumber
+                    response.error.message = e.message
+                    response.error.filename = el.fileName
                 }
             }
             response.status = 'error'
@@ -140,10 +141,10 @@ class DSL {
         def analyseURI = _props[_data].id
         def evalObjURI = _k[analyseURI].getAttr('appliedTo')
         def data = []
-        _k[evalObjURI].getDataProperties().each{
+        _k[evalObjURI].dataProperties.each{
             data.push([label: it.dataPropertyLabel.capitalize(), value: it.value])
         }
-        _k[evalObjURI].getObjectProperties().each{
+        _k[evalObjURI].objectProperties.each{
             data.push([label: it.objectPropertyLabel.capitalize(), value: it.valueLabel])
         }
         _reportView.push(['widget': 'evaluationObjectInfo', 'attrs': [data: data]])
@@ -189,17 +190,17 @@ class DSL {
         float value
         //println obj
 
-        if(obj instanceof ArrayList) {
+        if(obj in ArrayList) {
             obj.each {
-                value = (it.value.getClass() == Boolean ? (it.value ? 1 : -1) : it.value)
+                value = (it.value in Boolean ? (it.value ? 1 : -1) : it.value)
                 val += (float) value
             }
             return val
         }
-        else if(obj instanceof Boolean){
+        else if(obj in Boolean){
             return (obj ? 1.0 : -1.0)
         }
-        else if(obj instanceof Double || obj instanceof Integer){
+        else if(obj in Double || obj in Integer){
             return obj
         }
     }
@@ -209,18 +210,15 @@ class DSL {
         float value
         float weight
 
-        if(obj instanceof ArrayList) {
+        if(obj in ArrayList) {
             obj.each {
-                value = (it.value.getClass() == Boolean ? (it.value ? 1 : -1) : it.value)
-                if(it.relevance){
-                    weight = (it.relevance.getClass() == Boolean ? (it.relevance ? 1 : -1) : it.relevance)
-                }
-                else if(it.weight){
+                value = (it.value in Boolean ? (it.value ? 1 : -1) : it.value)
+                if (it.relevance)
+                    weight = (it.relevance in Boolean ? (it.relevance ? 1 : -1) : it.relevance)
+                else if (it.weight)
                     weight = it.weight
-                }
-                else{
+                else
                     weight = 1.0
-                }
                 val += (float) value * weight
             }
         }
@@ -232,25 +230,23 @@ class DSL {
         float num
         //println obj
 
-        if(obj instanceof ArrayList){
+        if(obj in ArrayList){
             obj.each{
-                num = (it.getClass() == Boolean ? (it ? 1 : -1) : it)
+                num = (it in Boolean ? (it ? 1 : -1) : it)
                 val += (float) num
             }
             return val/obj.size()
         }
-        else if(obj instanceof Boolean){
+        else if(obj in Boolean)
             return (obj ? 1.0 : -1.0)
-        }
-        else if(obj instanceof Double || obj instanceof Integer){
+        else if(obj in Double || obj in Integer)
             return obj
-        }
     }
 
     def getVariables(){
         def result = [:]
         _props.each{ key, value ->
-            if(value.getClass() != DataReader)
+            if(value.class != DataReader)
                 result[key] = value
         }
         return result
@@ -301,51 +297,46 @@ class DSL {
         //println "DSL methodMissing: "+ key
         def attrsTmp = attrs.clone()
         def tmp
-        if(attrs.getClass() == Object[]){
+        if(attrs in Object[]){
             def container = []
             def element = null
-            def locale = Locale.getDefault()
+            def locale = Locale.default
             def i18nParams = ['label', 'label_x', 'label_y', 'legend']
 
-            if(_gui.getWidgetsNames().contains(key)){
-                /*if(key=='text'){
+            if(key in _gui.widgetsNames){
+                if(key=='text'){
                     println key
                     println attrs
                     println attrs.size()
                     println attrs[0].getClass()
-                }*/
-                if(attrs.size()==1 && attrs[0].getClass() == String){
+                }
+                if(attrs.size()==1 && attrs[0] in String){
                     if(_reportView){
                         container = _reportView
                         element = ['widget': key, 'attrs': ['text': _toHTML(attrs[0])]]
-                    }
-                    else{
+                    } else
                         _props[key] =_toHTML(attrs[0])
-                    }
                 }
-                else if(attrs.size()==1 && attrs[0].getClass() == LinkedHashMap){
+                else if(attrs.size()==1 && attrs[0] in LinkedHashMap){
                     if(_reportView && key == 'text'){
                         container = _reportView
-                        if(attrs[0].getClass() == LinkedHashMap){
+                        if(attrs[0] in LinkedHashMap)
                             tmp = attrs[0][locale.language]
-                        }
-                        else{
+                        else
                             tmp = attrs[0]
-                        }
                         element = ['widget': key, 'attrs': ['text': _toHTML(tmp)]]
                     }
                     else{
                         container = _reportView
                         i18nParams.each{ param ->
-                            if(attrsTmp[0][param] && (attrs[0][param].getClass() == LinkedHashMap)){
+                            if(attrsTmp[0][param] && (attrs[0][param] in LinkedHashMap))
                                 attrsTmp[0][param] = attrs[0][param][locale.language]
-                            }
-                            else if(attrsTmp[0][param] && (attrs[0][param].getClass() == ArrayList)){
+                            else if(attrsTmp[0][param] && (attrs[0][param] in ArrayList)){
                                 tmp = []
                                 attrs[0][param].each{
-                                    if(it.getClass() == LinkedHashMap)
+                                    if(it in LinkedHashMap)
                                         tmp.push(it[locale.language])
-                                    else if(it.getClass() == String)
+                                    else if(it in String)
                                         tmp.push(it)
                                 }
                                 attrsTmp[0][param] = tmp
@@ -354,7 +345,7 @@ class DSL {
                         element = ['widget': key, 'attrs': attrsTmp[0]]
                     }
                 }
-                else if(attrs.size()==2 && attrs[0].getClass() == LinkedHashMap && attrs[1].getClass() == ArrayList){
+                else if(attrs.size()==2 && attrs[0] in LinkedHashMap && attrs[1] in ArrayList){
                     if(attrs[0].text){
                         container = attrs[1]
                         element = ['widget': key, 'attrs': ['text': _toHTML(attrs[0].text)]]
@@ -367,7 +358,7 @@ class DSL {
                 if(element)
                     container.push(element)
             }
-            else if(attrs.size()==1 && attrs[0].getClass() == String){
+            else if(attrs.size()==1 && attrs[0] in String){
                 _props[key] = _toHTML(attrs[0])
             }
             else{
@@ -390,7 +381,7 @@ class DSL {
     }
 
     def message(String code){
-        _msg.getMessage(code, null, java.util.Locale.getDefault())
+        _msg.getMessage(code, null, Locale.getDefault())
     }
 
     static _toHTML(String txt) {_md.markdownToHtml(txt)}

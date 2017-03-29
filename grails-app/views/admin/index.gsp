@@ -35,6 +35,7 @@
                         <li><a data-toggle="tab" href="#dsls">DSL</a></li>
                         <li><a data-toggle="tab" href="#views">Views</a></li>
                         <li><a data-toggle="tab" href="#internationalization">Internationalization</a></li>
+                        <li><a data-toggle="tab" href="#datasetVisualization">Dataset Visualization</a></li>
                     </ul>
                     <div class="btn-group navbar-btn navbar-right">
                         <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -61,6 +62,9 @@
                     <div id="internationalization" class="tab-pane fade">
                         <g:render template="internationalization" />
 					</div>
+                    <div id="datasetVisualization" class="tab-pane fade">
+                        <g:render template="datasetVisualization" />
+                    </div>
                     <div id="widgets" class="tab-pane fade">
 
                     </div>

@@ -1,3 +1,6 @@
+<g:set var="locale"
+       value="${session.'org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE' ?: org.springframework.web.servlet.support.RequestContextUtils.getLocale(request)}"/>
+
 <!DOCTYPE html>
 <!--
   Copyright (c) 2015-$today.year Dilvan Moreira.
@@ -41,6 +44,14 @@
     <asset:javascript src="jspdf/split_text_to_size.min.js"/>
     <asset:javascript src="jspdf/standard_fonts_metrics.min.js"/>
     <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <asset:javascript src="bower_components/webcomponentsjs/webcomponents-lite.js"/>
+    <asset:link rel="import" href="bower_components/paper-checkbox/paper-checkbox.html"/>
+    <asset:link rel="import" href="bower_components/sustainability-matrix/sustainability-matrix.html"/>
+    <asset:link rel="import" href="bower_components/sustainability-semaphore/sustainability-semaphore.html"/>
+
 </head>
 <body>
 <div class="row main">

@@ -226,9 +226,8 @@ class SparqlBase extends Sparql{
 
                     if (varName != 'label' || literal.language == lang)
                         row.put(varName, (varNode.isLiteral() ? literal.value : varNode.toString()))
-
-                    else if (lang == '*' && varNode.isLiteral() && literal.getLanguage()) {
-                        row.put(varName + '@' + literal.getLanguage(), literal.getString())
+                    else if (lang == '*' && varNode.isLiteral() && literal.language) {
+                        row.put(varName + '@' + literal.language, literal.string)
                     }
 
                     //println varNode.isLiteral()
@@ -251,14 +250,12 @@ class SparqlBase extends Sparql{
 
                     if (existingRow) {
                         row.each { key, value ->
-                            if (key.startsWith('label')) {
+                            if (key.startsWith('label'))
                                 last.put(key, value)
-                            }
                         }
                         add = false
-                    } else {
+                    } else
                         add = true
-                    }
                     last = row
                 }
 

@@ -13,6 +13,9 @@
 *.iml
 .idea
 
+#Ignore VS Code files
+.vscode
+
 # Exclude build directory
 target
 build

@@ -54,8 +54,8 @@
             $.post('/admin/indicatorForm',
                     {'id':  id},
                     function(data){
-                        $("#indicator_editor").html(data)
-                        $("#valuetype-table").bootstrapTable()
+                        $("#indicator_editor").html(data);
+                        $("#valuetype-table").bootstrapTable();
                         $('#indicator_form').submit(function(event){
                             $.post(
                                     $(this).attr('action'),
